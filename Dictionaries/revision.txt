@@ -1,0 +1,2 @@
+oscillate.virpėti, vibruoti, svyruoti.The dashed lines near the y-axis indicate that the values of sin(pi/x) oscillate between 1 and -1 infinitely often as x approaches 0.Verb. .
+sadsa.dasdasd. .Verb. .

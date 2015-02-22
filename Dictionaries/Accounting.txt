@@ -1,0 +1,5 @@
+﻿prevalence.vyravimas.Prevalence of step costs.Noun. .
+classified.priskirtas tam tikrai kategorijai.Costs should be classified.Adjective. .
+volume.apimtis, tūris, masė.activities are not necessarily based on the volume of production.Noun. .
+anticipate.numatyti, nujausti, laukti, tikėtis.The labor efficiency variance is useful for spotlighting those areas in the production process that are using more labour hours than anticipated.Verb. .
+variance.skirtumas, neatitikimas. .Noun.the difference between actual and standard costs of production.
