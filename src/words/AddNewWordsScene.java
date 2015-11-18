@@ -12,9 +12,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -54,41 +51,22 @@ public class AddNewWordsScene extends BorderPane {
     private Button nextWordButton;
     private Button saveWordsButton;
     
-    private Path p;
+    private String dictionariesDir;
     
     @SuppressWarnings("Convert2Lambda")
     public AddNewWordsScene(File dictionary) {
-        String path = MenuWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-        p = Paths.get(URI.create("file:" + path));
-        p = p.getParent().getParent();
+        File jarFile = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
+        dictionariesDir = jarFile.getParent() + "/Dictionaries/";
         
         wordList = new ArrayList<Word>();
         
-        /**
-         * Label "English"
-         * 
-         * TextField for english translation
-         */
         Label englishLabel = new Label("English");
-        
         englishTextField = new TextField("");
         englishTextField.setPrefColumnCount(10);  
-        
-        /**
-         * Tooltip for lithuanianTextArea "Use commas to separate
-         * translations"
-         * 
-         * Label "Lithuanian"
-         * 
-         * TextArea for lithuanian translation
-         * TAB pressed - gets to the next object (exampleTextArea)
-         * While not entered, nextWordButton is disabled
-         */
+       
         final Tooltip lithuanianToolTip = new Tooltip();
         lithuanianToolTip.setText("Use commas to separate translations");
-        
         Label lithuanianLabel = new Label("Lithuanian");
-        
         lithuanianTextArea = new TextArea();
         lithuanianTextArea.setTooltip(lithuanianToolTip);
         lithuanianTextArea.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -108,19 +86,13 @@ public class AddNewWordsScene extends BorderPane {
             if (lithuanianTextArea.getText().isEmpty()) {
                 nextWordButton.setDisable(true);
             }
+            // if textarea not empty and pos is chosen
             else if ((!lithuanianTextArea.getText().isEmpty()) && (posID > 0)) {
                 nextWordButton.setDisable(false);
             }
         });
         
-        /**
-         * Label "Example Sentence"
-         * 
-         * TextArea for an example sentence of the word
-         * TAB pressed - gets to the next object (definitionTextArea)
-         */
         Label exampleLabel = new Label("Example Sentence");
-        
         exampleTextArea = new TextArea("");
         exampleTextArea.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent k) {
@@ -137,9 +109,6 @@ public class AddNewWordsScene extends BorderPane {
         exampleTextArea.setWrapText(true);
         
         /**
-         * The ChoiceBox for choosing a part of speech of the word
-         * The list in the partOfSpeech is posList (the list of parts
-         * of speeches)
          * If anything except first choice (Part of Speech) is selected
          * nextWordButton is enabled
          */
@@ -149,25 +118,19 @@ public class AddNewWordsScene extends BorderPane {
         partOfSpeech.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
             @SuppressWarnings("override")
             public void changed(ObservableValue ov, Number value, Number new_value)  {
-                if (new_value.intValue() > 0) {
+                final int NOT_CHOSEN = 0;
+                if (new_value.intValue() > NOT_CHOSEN) {
                     posID = new_value.intValue();
                     if (!lithuanianTextArea.getText().isEmpty())
                         nextWordButton.setDisable(false);
                 }
-                else if (new_value.intValue() == 0) {
+                else if (new_value.intValue() == NOT_CHOSEN) {
                     nextWordButton.setDisable(true);
                 }
             }
         });
         
-        /**
-         * Label "Definition"
-         * 
-         * TextArea for the definition of the word
-         * TAB pressed - gets to the next object (nextWordButton)
-         */
         Label definitionLabel = new Label("Definition");
-        
         definitionTextArea = new TextArea("");
         definitionTextArea.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent k) {
@@ -221,7 +184,7 @@ public class AddNewWordsScene extends BorderPane {
         saveWordsButton.setPrefSize(80, 20);
         saveWordsButton.setOnAction((ActionEvent event) -> {
                 try {
-                    try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(p + "/Dictionaries/" + dictionary, true), "UTF-8"))) {
+                    try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(dictionariesDir + dictionary, true), "UTF-8"))) {
                         for(Word w:wordList) {
                             writer.write(w.getEnglish() + ".");
                             writer.write(w.getLithuanian() + ".");
@@ -232,7 +195,7 @@ public class AddNewWordsScene extends BorderPane {
                         }
                     }
 		} catch (IOException ex) {
-			InfoBoxProvider error = new InfoBoxProvider("Couldn't save the file!", "Error");
+                    System.err.println("Couldn't save the file!");
 		}
                 wordList.clear();
                 saveWordsButton.setDisable(true);

@@ -1,5 +1,0 @@
-underpinning.pamatas, pagrindas.Computer science rests on solid theoretical underpinnings to answer such questions precisely.Noun. .
-invariant.nekintamas, pastovus.It is using invariants to describe a system's behavior succinctly and declaratively.Adjective. .
-succinctly.trumpai, glaustai.It is using invariants to describe a system's behavior succinctly and declaratively.Adverb. .
-declarative.deklaratyvus.It is using invariants to describe a system's behavior succinctly and declaratively.Adjective.Serving to declare, make known, or explain.
-equate.prilyginti, sulyginti, laikyti lygiu.Many people equate computer science with computer programming.Verb. .

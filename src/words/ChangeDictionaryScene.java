@@ -14,9 +14,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 import javafx.beans.value.ChangeListener;
@@ -62,9 +60,13 @@ public class ChangeDictionaryScene extends BorderPane {
     private Word currentWord;
     private int currentWordIndex;
     
+    private String dictDir;
+    
     @SuppressWarnings("Convert2Lambda")
     public ChangeDictionaryScene(File dictionary) {
         wordList = new ArrayList<Word>();
+        File jarFile = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
+        dictDir = jarFile.getParent() + "/Dictionaries/";
         
         /**
          * Label "English"
@@ -290,21 +292,22 @@ public class ChangeDictionaryScene extends BorderPane {
      * @param dictionary 
      */
     public final void loadDictionary(File dictionary) {
-        String path = MenuWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-        Path p = Paths.get(URI.create("file:" + path));
-        p = p.getParent().getParent();
         wordList = new ArrayList<Word>();
         
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(p + "/Dictionaries/" + dictionary), "UTF-8"));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(dictDir + dictionary), "UTF-8"));
             String line;
             while ((line = reader.readLine()) != null) {
                 makeWord(line);
             }
         }
+        catch (UnsupportedEncodingException e) {
+            System.err.println(e.getMessage());
+	}
         catch(Exception ex) {
-                InfoBoxProvider error = new InfoBoxProvider("Couldn't read words from the dictionary!", "Error");
+            System.err.print("Couldn't read words from the dictionary!" + ex.getMessage());
         }
+        
         
         showNextWord();
     }
@@ -329,16 +332,19 @@ public class ChangeDictionaryScene extends BorderPane {
         if (currentWordIndex >= wordList.size()) {
             nextWordButton.setDisable(true);
             saveWordsButton.setDisable(false);
-            InfoBoxProvider error = new InfoBoxProvider("No more words to change. If you want to add more words to the dictionary"
-                                                        + " simply go to HOME view and select ADD NEW WORDS" , "Info");
+            deleteWordButton.setDisable(true);
+            System.err.println("No more words to change. If you want to add more words to the dictionary"
+                                                        + " simply go to HOME view and select ADD NEW WORDS");
         }
-        currentWord = wordList.get(currentWordIndex);
-        currentWordIndex++;
-        englishTextField.setText(currentWord.getEnglish());
-        lithuanianTextArea.setText(currentWord.getLithuanian());
-        partOfSpeech.getSelectionModel().select(currentWord.getPartOfSpeech());
-        definitionTextArea.setText(currentWord.getDefinition());
-        exampleTextArea.setText(currentWord.getExampleSentence());
+        else {
+            currentWord = wordList.get(currentWordIndex);
+            currentWordIndex++;
+            englishTextField.setText(currentWord.getEnglish());
+            lithuanianTextArea.setText(currentWord.getLithuanian());
+            partOfSpeech.getSelectionModel().select(currentWord.getPartOfSpeech());
+            definitionTextArea.setText(currentWord.getDefinition());
+            exampleTextArea.setText(currentWord.getExampleSentence());
+        }
     }
     
     /**
@@ -363,11 +369,8 @@ public class ChangeDictionaryScene extends BorderPane {
      * @param dictionary 
      */
     private void saveWords(File dictionary) {
-        String path = MenuWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-        Path p = Paths.get(URI.create("file:" + path));
-        p = p.getParent().getParent();
         try {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(p + "/" + dictionary))) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(dictDir + dictionary))) {
                 for(Word w:wordList) {
                     writer.write(w.getEnglish() + ".");
                     writer.write(w.getLithuanian() + ".");
@@ -378,7 +381,7 @@ public class ChangeDictionaryScene extends BorderPane {
                 }
             }
         } catch (IOException ex) {
-                InfoBoxProvider error = new InfoBoxProvider("Saving failed!", "Error");
+            System.out.print(ex + " Error in ChangeDictionaryScene!");
         }
     }
     

@@ -12,14 +12,12 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Mantas/Documents/NetBeansProjects/Words/src/words/CreateDictionaryScene.java</file>
-            <file>file:/C:/Users/Mantas/Documents/NetBeansProjects/Words/src/words/MenuWindow.java</file>
-            <file>file:/C:/Users/Mantas/Documents/NetBeansProjects/Words/src/words/MainWindow.css</file>
-            <file>file:/C:/Users/Mantas/Documents/NetBeansProjects/Words/src/words/Dictionaries.java</file>
-            <file>file:/C:/Users/Mantas/Documents/NetBeansProjects/Words/src/words/ChooseDictionaryScene.java</file>
-            <file>file:/C:/Users/Mantas/Documents/NetBeansProjects/Words/src/words/ChangeDictionaryScene.java</file>
-            <file>file:/C:/Users/Mantas/Documents/NetBeansProjects/Words/src/words/StartDictionaryScene.java</file>
-            <file>file:/C:/Users/Mantas/Documents/NetBeansProjects/Words/src/words/AddNewWordsScene.java</file>
+            <file>file:/Users/Mantas/IT/Words/src/words/Dictionaries.java</file>
+            <file>file:/Users/Mantas/IT/Words/src/words/MenuWindow.java</file>
+            <file>file:/Users/Mantas/IT/Words/src/words/StartDictionaryScene.java</file>
+            <file>file:/Users/Mantas/IT/Words/src/words/ChangeDictionaryScene.java</file>
+            <file>file:/Users/Mantas/IT/Words/src/words/CreateDictionaryScene.java</file>
+            <file>file:/Users/Mantas/IT/Words/src/words/AddNewWordsScene.java</file>
         </group>
     </open-files>
 </project-private>

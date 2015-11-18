@@ -4,11 +4,14 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.net.URI;
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -18,17 +21,16 @@ import java.util.ArrayList;
  * Saved in "dicts.txt" file
  */
 public class Dictionaries extends ArrayList<String> {
-    private Path p;
-    
     /**
      * When Dictionaries instance is created a list of dictionaries
      * are read from "dicts.txt" file
      */
+    
+    private String dictDir;
+    
     public Dictionaries() {
-        String path = MenuWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-        p = Paths.get(URI.create("file:" + path));
-        p = p.getParent().getParent();
-        
+        File jarFile = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
+        dictDir = jarFile.getParent() + "/Dictionaries/";
         readDicts();
     }
     
@@ -64,33 +66,39 @@ public class Dictionaries extends ArrayList<String> {
      * @param i
      */
     public void deleteDict(int i) {
+        
         String fileName;
         i++;                    // because customDicts doesn't include "Revision"
         fileName = this.get(i).toLowerCase();
-        File fileToDelete = new File(p + "/Dictionaries/" + fileName + ".txt");
-        if (fileToDelete.delete()) {
+        Path path = Paths.get(dictDir + fileName + ".txt");
+        try {
+            Files.delete(path);
             this.remove(i);
+            refreshDicts();
+        } catch (NoSuchFileException x) {
+            System.err.format("%s: no such" + " file or directory%n", path);
+        } catch (DirectoryNotEmptyException x) {
+            System.err.format("%s not empty%n", path);
+        } catch (IOException x) {
+            // File permission problems are caught here.
+            System.err.println(x);
         }
-        else {
-            InfoBoxProvider error = new InfoBoxProvider("File cannot be deleted!", "Error");
-        }
-        refreshDicts();
     }
-    
     /**
      * Read dictionaries from "dicts.txt" file and save to a new list
      */
     private void readDicts() {
-        //System.out.println("---" + p);
         try {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(p + "/Dictionaries/dicts.txt"), "UTF-8"))) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(dictDir + "dicts.txt"), "UTF-8"))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     this.add(line);
                 }
+            } catch (FileNotFoundException ex) {
+                System.out.println(ex.getMessage());
             }
         } catch (IOException ex) {
-            InfoBoxProvider error = new InfoBoxProvider("Couldn't read the dictionaries!", "Error");
+            System.out.println(ex);
         }
     }
     
@@ -100,19 +108,19 @@ public class Dictionaries extends ArrayList<String> {
      */
     public void refreshDicts() {
         try {
-            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(p + "/Dictionaries/dicts.txt"), "UTF-8"))) {
+            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(dictDir  + "dicts.txt"), "UTF-8"))) {
                  for(String d:this) {
                             writer.write(d);
                             writer.newLine();
                         }
             }
         } catch (IOException ex) {
-            InfoBoxProvider error = new InfoBoxProvider("Dictionary Creation Failed!", "Error");
+            System.out.println(ex);
         }
     }
     
     /**
-     * Renames the name of the dicitonary which index is i by a 
+     * Renames the name of the dictionary which index is i by a 
      * new name newName
      * @param i
      * @param newName
@@ -121,16 +129,26 @@ public class Dictionaries extends ArrayList<String> {
         String fileName;
         i++;                    // because customDicts doesn't include "Revision"
         fileName = this.get(i).toLowerCase();
-        File fileToDelete = new File(p + "/Dictionaries/" + fileName + ".txt");
-        File newFile = new File(p + "/Dictionaries/" + newName.toLowerCase() + ".txt");
+        String fileDelete = dictDir + fileName + ".txt";
+        File fileToDelete = new File(fileDelete);
+        String fileNew = dictDir + newName.toLowerCase() + ".txt";
+        File newFile = new File(fileNew);
+        Path path = fileToDelete.toPath();
         copyDictionaryFile(newFile, fileToDelete);
-        if (fileToDelete.delete()) {
-            this.add(i, newName);
-            this.remove(i+1);   
+        try {
+            Files.delete(path);
+            this.remove(i);
+            this.add(newName);
+            refreshDicts();
+        } catch (NoSuchFileException x) {
+            System.err.format("%s: no such" + " file or directory%n", path);
+        } catch (DirectoryNotEmptyException x) {
+            System.err.format("%s not empty%n", path);
+        } catch (IOException x) {
+            // File permission problems are caught here.
+            System.err.println(x);
         }
-        else {
-            InfoBoxProvider error = new InfoBoxProvider("File cannot be renamed!", "Error");
-        }
+        
         refreshDicts();
     }
     
@@ -152,7 +170,7 @@ public class Dictionaries extends ArrayList<String> {
                     reader.close();
                 }
         } catch(Exception ex) {
-                InfoBoxProvider error = new InfoBoxProvider("File cannot be copied!", "Error");
+                System.out.println(ex);
         }	
     }
 }

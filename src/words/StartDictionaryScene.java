@@ -13,9 +13,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 import javafx.event.ActionEvent;
@@ -78,12 +75,14 @@ public class StartDictionaryScene extends BorderPane {
     
     private boolean showStatistics;
     
-    private Path p;
+    private String dictDir;
+    private java.net.URL imgURL;
+    
     
     public StartDictionaryScene(boolean mode, File file, Scene scene) {
-        String path = MenuWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-        p = Paths.get(URI.create("file:" + path));
-        p = p.getParent().getParent();
+        File jarFile = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
+        dictDir = jarFile.getParent() + "/Dictionaries/";
+        imgURL = MenuWindow.class.getResource("Images");
         
         
         dictionary = file;
@@ -213,7 +212,7 @@ public class StartDictionaryScene extends BorderPane {
         wrongWordList = new ArrayList<Word>();
         wordsCount = 0;                             // # of words in a dictionary
         try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(p + "/Dictionaries/" + dictionary), "UTF-8"));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(dictDir+ dictionary), "UTF-8"));
                 String line;
                 while ((line = reader.readLine()) != null) {
                         wordsCount++;
@@ -221,7 +220,7 @@ public class StartDictionaryScene extends BorderPane {
                 }	
                 reader.close();
         } catch(Exception ex) {
-                InfoBoxProvider error = new InfoBoxProvider("Couldn't read words from the dictionary!", "Error");
+            System.out.println(ex);
         }        
         showNextWord();
     }
@@ -284,7 +283,7 @@ public class StartDictionaryScene extends BorderPane {
                  */
                 if (oneOfPossibleAnswers.equals(userAnswer)) {                          // if one of the correct answers is a user's answer
                     foundCorrectAnswer = true;                                          // correct answer found
-                    correctWordImage = new Image("file:" + p + "/Images/checkmark.png");                 // gets an image "checkmark"
+                    correctWordImage = new Image(imgURL + "/checkmark.png");                 // gets an image "checkmark"
                     wordStatusLabel.setText("Correct!");                                // shows "Correct!"
                     wordStatusLabel.setId("green");                                     // paints "Correct!" green
                     wordStatusImage.setImage(correctWordImage);                         // set the image
@@ -297,7 +296,7 @@ public class StartDictionaryScene extends BorderPane {
             if (!foundCorrectAnswer) {
                 errCount++;                                                             // one more error found
                 wrongWordList.add(currentWord);
-                wrongWordImage = new Image("file:" + p + "/Images/x-mark.png");                          // gets an image "x-mark"
+                wrongWordImage = new Image(imgURL + "/x-mark.png");                          // gets an image "x-mark"
                 wordStatusLabel.setText("Wrong!");                                      // shows "Wrong!"
                 wordStatusLabel.setId("red");                             // paints "Wrong!" red
                 wordStatusImage.setImage(wrongWordImage);                               // set the image
@@ -331,7 +330,7 @@ public class StartDictionaryScene extends BorderPane {
              * If user's answer is correct...
              */
             if (userAnswer.equals(correctAnswer)) {
-                correctWordImage = new Image("file:checkmark.png");                 // gets an image "checkmark"
+                correctWordImage = new Image(imgURL + "/checkmark.png");                 // gets an image "checkmark"
                 wordStatusLabel.setText("Correct!");                                // shows "Correct!"
                 wordStatusLabel.setId("green");                      // paints "Correct!" green
                 wordStatusImage.setImage(correctWordImage);                         // set the image
@@ -342,7 +341,7 @@ public class StartDictionaryScene extends BorderPane {
             else {
                 errCount++;                                                             // one more error found
                 wrongWordList.add(currentWord);
-                wrongWordImage = new Image("file:x-mark.png");                          // gets an image "x-mark"
+                wrongWordImage = new Image(imgURL + "/x-mark.png");                          // gets an image "x-mark"
                 wordStatusLabel.setText("Wrong!");                                      // shows "Wrong!"
                 wordStatusLabel.setId("red");                             // paints "Wrong!" red
                 wordStatusImage.setImage(wrongWordImage);                               // set the image
@@ -389,7 +388,7 @@ public class StartDictionaryScene extends BorderPane {
     private void refreshRevisionDictionary() {
         boolean isRevision = !dictionaryName.equalsIgnoreCase("revision");
         try {
-            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(p + "/Dictionaries/revision.txt", isRevision), "UTF-8"))) {
+            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(dictDir + "revision.txt", isRevision), "UTF-8"))) {
                 for(Word w:wrongWordList) {
                     writer.write(w.getEnglish() + ".");
                     writer.write(w.getLithuanian() + ".");
@@ -400,7 +399,7 @@ public class StartDictionaryScene extends BorderPane {
                 }
             }
         } catch (IOException ex) {
-            InfoBoxProvider error = new InfoBoxProvider("Revision dictionary creation or updating failed!", "Error");
+            System.out.println(ex);
         }
     }
     
@@ -408,6 +407,7 @@ public class StartDictionaryScene extends BorderPane {
      * Shows statistics of the dictionary
      */
     private void showStatisticsGrid() {
+        
         /**
          * The name of the dictionary label
          */

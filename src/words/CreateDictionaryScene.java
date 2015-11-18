@@ -10,9 +10,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -32,9 +29,11 @@ import javafx.scene.layout.VBox;
 public class CreateDictionaryScene extends GridPane {
     private String dictionaryName;
     private File dictionary;
+    private String dictDir;
     
     public CreateDictionaryScene(Dictionaries dicts, Scene scene) {
-        
+        File jarFile = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
+        dictDir = jarFile.getParent() + "/Dictionaries/";
         /**
          * Label "Name of the dictionary"
          */
@@ -68,7 +67,7 @@ public class CreateDictionaryScene extends GridPane {
                 ((VBox) scene.getRoot()).getChildren().add(newWords);
             }
             else {
-                InfoBoxProvider error = new InfoBoxProvider("Dictionary with such a name already exists!", "Error");
+                System.out.println("Error! Dictionary with such a name already exists.");
             }
         });
         
@@ -105,15 +104,12 @@ public class CreateDictionaryScene extends GridPane {
         dicts.refreshDicts();
         dictionaryName = dictionaryName.toLowerCase() + ".txt";
         dictionary = new File(dictionaryName);
-        String path = MenuWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-        Path p = Paths.get(URI.create("file:" + path));
-        p = p.getParent().getParent();
         
         try {
-            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(p + "/Dictionaries/" + dictionary), "UTF-8"))) {
+            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(dictDir + dictionary), "UTF-8"))) {
             }
         } catch (IOException ex) {
-            InfoBoxProvider error = new InfoBoxProvider("Dictionary Creation Failed!", "Error");
+            System.out.println(ex + " Error in CreateDictionaryScene!");
         }	
     }
 }
