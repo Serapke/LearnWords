@@ -38,44 +38,48 @@ import javafx.scene.layout.HBox;
  * @author Mantas
  */
 public class AddNewWordsScene extends BorderPane {
-    
+
     private final String[] posList = new String[] {"Part Of Speech", "Verb", "Noun", "Adverb", "Adjective"};
     private int posID;
     private ArrayList<Word> wordList;
-    
+
     private final TextField englishTextField;
     private TextArea lithuanianTextArea;
     private TextArea exampleTextArea;
     private final ChoiceBox partOfSpeech;
     private TextArea definitionTextArea;
+    private Button previousWordButton;
     private Button nextWordButton;
     private Button saveWordsButton;
-    
+
     private String dictionariesDir;
-    
-    @SuppressWarnings("Convert2Lambda")
+    private File dict;
+    private int wordIndex;
+
+    private final Tooltip useCommasTip = new Tooltip("Use commas to separate translations");
+
+    @SuppressWarnings({"Convert2Lambda", "Convert2Diamond"})
     public AddNewWordsScene(File dictionary) {
         File jarFile = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
         dictionariesDir = jarFile.getParent() + "/Dictionaries/";
-        
+        dict = dictionary;
         wordList = new ArrayList<Word>();
-        
+        wordIndex = 0;
+
         Label englishLabel = new Label("English");
         englishTextField = new TextField("");
-        englishTextField.setPrefColumnCount(10);  
-       
-        final Tooltip lithuanianToolTip = new Tooltip();
-        lithuanianToolTip.setText("Use commas to separate translations");
+        englishTextField.setPrefColumnCount(10);
+
         Label lithuanianLabel = new Label("Lithuanian");
         lithuanianTextArea = new TextArea();
-        lithuanianTextArea.setTooltip(lithuanianToolTip);
-        lithuanianTextArea.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            public void handle(KeyEvent k) {
-                if (k.getCode() == KeyCode.TAB) {
-                    TextAreaSkin skin = (TextAreaSkin) lithuanianTextArea.getSkin();
+        lithuanianTextArea.setTooltip(useCommasTip);
+        lithuanianTextArea.addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent e) -> {
+            if (e.getCode() == KeyCode.TAB) {
+                TextAreaSkin skin = (TextAreaSkin) lithuanianTextArea.getSkin();
+                if (skin.getBehavior() instanceof TextAreaBehavior) {
                     TextAreaBehavior behavior = (TextAreaBehavior) skin.getBehavior();
                     behavior.callAction("TraverseNext");
-                    k.consume();
+                    e.consume();
                 }
             }
         });
@@ -85,29 +89,33 @@ public class AddNewWordsScene extends BorderPane {
         lithuanianTextArea.textProperty().addListener((final ObservableValue<? extends String> observable, final String oldValue, final String newValue) -> {
             if (lithuanianTextArea.getText().isEmpty()) {
                 nextWordButton.setDisable(true);
+                saveWordsButton.setDisable(true);
             }
             // if textarea not empty and pos is chosen
             else if ((!lithuanianTextArea.getText().isEmpty()) && (posID > 0)) {
                 nextWordButton.setDisable(false);
+                if (wordIndex >= wordList.size()-1)
+                    saveWordsButton.setDisable(false);
             }
+            
         });
-        
+
         Label exampleLabel = new Label("Example Sentence");
         exampleTextArea = new TextArea("");
-        exampleTextArea.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            public void handle(KeyEvent k) {
-                if (k.getCode() == KeyCode.TAB) {
-                    TextAreaSkin skin = (TextAreaSkin) exampleTextArea.getSkin();
+        exampleTextArea.addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent e) -> {
+            if (e.getCode() == KeyCode.TAB) {
+                TextAreaSkin skin = (TextAreaSkin) exampleTextArea.getSkin();
+                if (skin.getBehavior() instanceof TextAreaBehavior) {
                     TextAreaBehavior behavior = (TextAreaBehavior) skin.getBehavior();
                     behavior.callAction("TraverseNext");
-                    k.consume();
+                    e.consume();
                 }
             }
         });
         exampleTextArea.setPrefColumnCount(20);
         exampleTextArea.setPrefRowCount(3);
         exampleTextArea.setWrapText(true);
-        
+
         /**
          * If anything except first choice (Part of Speech) is selected
          * nextWordButton is enabled
@@ -121,34 +129,45 @@ public class AddNewWordsScene extends BorderPane {
                 final int NOT_CHOSEN = 0;
                 if (new_value.intValue() > NOT_CHOSEN) {
                     posID = new_value.intValue();
-                    if (!lithuanianTextArea.getText().isEmpty())
+                    if (!lithuanianTextArea.getText().isEmpty()) {
                         nextWordButton.setDisable(false);
+                        if (wordIndex >= wordList.size()-1)
+                            saveWordsButton.setDisable(false);
+                    }
                 }
                 else if (new_value.intValue() == NOT_CHOSEN) {
                     nextWordButton.setDisable(true);
+                    saveWordsButton.setDisable(true);
                 }
             }
         });
-        
+
         Label definitionLabel = new Label("Definition");
         definitionTextArea = new TextArea("");
-        definitionTextArea.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            public void handle(KeyEvent k) {
-                if (k.getCode() == KeyCode.TAB) {
-                    TextAreaSkin skin = (TextAreaSkin) definitionTextArea.getSkin();
+        definitionTextArea.addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent e) -> {
+            if (e.getCode() == KeyCode.TAB) {
+                TextAreaSkin skin = (TextAreaSkin) definitionTextArea.getSkin();
+                if (skin.getBehavior() instanceof TextAreaBehavior) {
                     TextAreaBehavior behavior = (TextAreaBehavior) skin.getBehavior();
                     behavior.callAction("TraverseNext");
-                    k.consume();
+                    e.consume();
                 }
             }
         });
         definitionTextArea.setPrefColumnCount(15);
         definitionTextArea.setPrefRowCount(3);
         definitionTextArea.setWrapText(true);
-        
+
+        previousWordButton = new Button("Previous Word");
+        previousWordButton.setDisable(true);
+        previousWordButton.setPrefSize(140, 20);
+        previousWordButton.setOnAction((ActionEvent event) -> {
+            showWord(-1);
+        });
+
         /**
          * Button "Next Word"
-         * Disabled until lithuanianTextField is not empty and 
+         * Disabled until lithuanianTextField is not empty and
          * PartOfSpeech is chosen
          * When pressed, creates a new word and puts it on the
          * words list of the dictionary, then clears all fields and
@@ -160,10 +179,8 @@ public class AddNewWordsScene extends BorderPane {
         nextWordButton.setPrefSize(120, 20);
         nextWordButton.setOnAction((ActionEvent event) -> {
             makeWord();
-            clearWord();
-            saveWordsButton.setDisable(false);
         });
-        
+
         /**
          * Button "Save"
          * Disabled until nextWordButton is not pressed
@@ -174,6 +191,7 @@ public class AddNewWordsScene extends BorderPane {
          */
         saveWordsButton = new Button("Save");
         saveWordsButton.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
+            @Override
             public void handle(KeyEvent event) {
                 if (new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN).match(event)) {
                     saveWordsButton.fire();
@@ -183,24 +201,9 @@ public class AddNewWordsScene extends BorderPane {
         saveWordsButton.setDisable(true);
         saveWordsButton.setPrefSize(80, 20);
         saveWordsButton.setOnAction((ActionEvent event) -> {
-                try {
-                    try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(dictionariesDir + dictionary, true), "UTF-8"))) {
-                        for(Word w:wordList) {
-                            writer.write(w.getEnglish() + ".");
-                            writer.write(w.getLithuanian() + ".");
-                            writer.write(w.getExampleSentence() + ".");
-                            writer.write(w.getPartOfSpeech() + ".");
-                            writer.write(w.getDefinition() + ".");
-                            writer.newLine();
-                        }
-                    }
-		} catch (IOException ex) {
-                    System.err.println("Couldn't save the file!");
-		}
-                wordList.clear();
-                saveWordsButton.setDisable(true);
+            
         });
-        
+
         /**
          * The places in the grid where object will appear
          */
@@ -213,7 +216,7 @@ public class AddNewWordsScene extends BorderPane {
         GridPane.setConstraints(definitionLabel, 1, 5);
         GridPane.setConstraints(exampleTextArea, 0, 6);
         GridPane.setConstraints(definitionTextArea, 1, 6);
-        
+
         /**
          * The GridPane for all the fields (textareas, labels and
          * textfields)
@@ -226,46 +229,95 @@ public class AddNewWordsScene extends BorderPane {
                 lithuanianTextArea, exampleLabel, exampleTextArea,
                 definitionLabel, definitionTextArea);
         fields.setAlignment(Pos.TOP_LEFT);
-        
+
         /**
          * The HBox for buttons
          */
         HBox actionButtons = new HBox();
-        actionButtons.getChildren().addAll(nextWordButton, saveWordsButton);
+        actionButtons.getChildren().addAll(previousWordButton, nextWordButton, saveWordsButton);
         actionButtons.setPadding(new Insets(15, 12, 15, 12));
         actionButtons.setSpacing(10);
         actionButtons.setAlignment(Pos.BASELINE_RIGHT);
-        
+
         getStyleClass().add("addNewWordsScene");
         setCenter(fields);
-        setBottom(actionButtons);        
+        setBottom(actionButtons);
     }
-    
+
     /**
      * Makes a Word from the fields entered and puts the Word into
  the list of Words (wordList)
      */
     private void makeWord() {
-        Word newWord;
-        String eng = englishTextField.getText();
-        String lt = lithuanianTextArea.getText();
-        String ex = exampleTextArea.getText();
-        if (ex.isEmpty())   ex = " ";
+        Word currentWord;
+        String englishTranslation = englishTextField.getText();
+        String lituanianTranslation = lithuanianTextArea.getText();
+        String exampleSentence = exampleTextArea.getText();
+        if (exampleSentence.isEmpty())   exampleSentence = " ";
         String pos = posList[posID];
-        String def = definitionTextArea.getText();
-        if (def.isEmpty())  def = " ";
-        newWord = new Word(eng, lt, ex, pos, def);
-        wordList.add(newWord);
+        String wordDefinition = definitionTextArea.getText();
+        if (wordDefinition.isEmpty())  wordDefinition = " ";
+        currentWord = new Word(englishTranslation, lituanianTranslation, exampleSentence, pos, wordDefinition);
+        System.out.print(wordIndex + " " + wordList.size());
+        if (wordIndex < wordList.size()) {
+            wordList.set(wordIndex, currentWord);
+        } else {
+            wordList.add(currentWord);
+        }
+        wordIndex++;
+        clearWord();
+        if (wordIndex > 0)
+            previousWordButton.setDisable(false);
     }
     
+    private void saveWords() {
+        try {
+                try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(dictionariesDir + dict, true), "UTF-8"))) {
+                    for(Word w:wordList) {
+                        writer.write(w.getEnglish() + ".");
+                        writer.write(w.getLithuanian() + ".");
+                        writer.write(w.getExampleSentence() + ".");
+                        writer.write(w.getPartOfSpeech() + ".");
+                        writer.write(w.getDefinition() + ".");
+                        writer.newLine();
+                    }
+                }
+        		} catch (IOException ex) {
+                            System.err.println("Couldn't save the file!");
+        		}
+            wordList.clear();
+            saveWordsButton.setDisable(true);
+    }
+
     /**
      * Clears all the fields and textareas
      */
     private void clearWord() {
-        englishTextField.setText("");
-        lithuanianTextArea.setText("");
-        exampleTextArea.setText("");
-        definitionTextArea.setText("");
-        partOfSpeech.getSelectionModel().selectFirst();
+        if (wordIndex < wordList.size()) {
+            showWord(1);
+        } else {
+            englishTextField.setText("");
+            lithuanianTextArea.setText("");
+            exampleTextArea.setText("");
+            definitionTextArea.setText("");
+            partOfSpeech.getSelectionModel().selectFirst();
+        }
+    }
+
+    private void showWord(int direction) {
+      Word currentWord;
+      if ((direction < 0) && (wordIndex > 0)) {                        // show previous word
+        currentWord = wordList.get(--wordIndex);
+        saveWordsButton.setDisable(true);
+        if (wordIndex == 0)
+          previousWordButton.setDisable(true);
+      } else {                                                          // show next word
+            currentWord = wordList.get(wordIndex);
+      }
+        englishTextField.setText(currentWord.getEnglish());
+        lithuanianTextArea.setText(currentWord.getLithuanian());
+        exampleTextArea.setText(currentWord.getExampleSentence());
+        definitionTextArea.setText(currentWord.getDefinition());
+        partOfSpeech.getSelectionModel().select(currentWord.getPartOfSpeech());
     }
 }

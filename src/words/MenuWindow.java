@@ -79,7 +79,7 @@ public class MenuWindow extends Application {
                  *      On Action: opens Main Menu
                  */
                 //home = new MenuItem("Home", new ImageView(new Image(imgURL + "/home.png")));
-                MenuItem home = createMenuItem("Home", "home.png", "CTRL+H");
+                home = createMenuItem("Home", "home.png", "CTRL+H");
                 home.setDisable(true);
                 home.setOnAction((ActionEvent e) -> {
                     PrepareView();
@@ -137,8 +137,7 @@ public class MenuWindow extends Application {
                         if (!dicts.contains(newNameTextField.getText())) {
                             dicts.renameDict(selectedDictionaryID, newNameTextField.getText());
                             popup.hide();
-                        }
-                        else {
+                        } else {
                             System.out.println("Error! Dictionary with such a name already exists!");
                         }
                     });
@@ -439,7 +438,8 @@ public class MenuWindow extends Application {
 
     private MenuItem createMenuItem(String name, String img, String keyComb) {
       MenuItem menuItem = new MenuItem(name, new ImageView(new Image(imgURL + "/" + img)));
-      menuItem.setAccelerator(KeyCombination.keyCombination(keyComb));
+      if (!keyComb.isEmpty())
+        menuItem.setAccelerator(KeyCombination.keyCombination(keyComb));
       return menuItem;
     }
     /**

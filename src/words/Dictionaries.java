@@ -98,7 +98,8 @@ public class Dictionaries extends ArrayList<String> {
                 System.out.println(ex.getMessage());
             }
         } catch (IOException ex) {
-            System.out.println(ex);
+            System.out.println(ex.getMessage());
+            // Create new dicts.txt and revision.txt files 
         }
     }
     

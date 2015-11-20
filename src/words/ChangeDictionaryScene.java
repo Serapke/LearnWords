@@ -199,7 +199,7 @@ public class ChangeDictionaryScene extends BorderPane {
          * word, if it was sets itself disabled
          */
         deleteWordButton = new Button("Delete Word");
-        deleteWordButton.setPrefSize(120, 20);
+        deleteWordButton.setPrefSize(140, 20);
         deleteWordButton.setOnAction((ActionEvent event) -> {
             currentWordIndex--;
             wordList.remove(currentWordIndex);
@@ -328,8 +328,7 @@ public class ChangeDictionaryScene extends BorderPane {
      * Shows next Word from wordsList in textfields and textareas
      */
     private void showNextWord() {
-        nextWordButton.setDisable(false);
-        if (currentWordIndex >= wordList.size()) {
+        if (currentWordIndex == wordList.size()-1) {
             nextWordButton.setDisable(true);
             saveWordsButton.setDisable(false);
             deleteWordButton.setDisable(true);
