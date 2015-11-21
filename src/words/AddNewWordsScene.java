@@ -61,7 +61,7 @@ public class AddNewWordsScene extends BorderPane {
     @SuppressWarnings({"Convert2Lambda", "Convert2Diamond"})
     public AddNewWordsScene(File dictionary) {
         File jarFile = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
-        dictionariesDir = jarFile.getParent() + "/Dictionaries/";
+        dictionariesDir = jarFile.getParentFile().getParent() + "/Dictionaries/";
         dict = dictionary;
         wordList = new ArrayList<Word>();
         wordIndex = 0;
@@ -97,7 +97,7 @@ public class AddNewWordsScene extends BorderPane {
                 if (wordIndex >= wordList.size()-1)
                     saveWordsButton.setDisable(false);
             }
-            
+
         });
 
         Label exampleLabel = new Label("Example Sentence");
@@ -158,9 +158,7 @@ public class AddNewWordsScene extends BorderPane {
         definitionTextArea.setPrefRowCount(3);
         definitionTextArea.setWrapText(true);
 
-        previousWordButton = new Button("Previous Word");
-        previousWordButton.setDisable(true);
-        previousWordButton.setPrefSize(140, 20);
+        previousWordButton = new MyButton("Previous Word", "simpleButton", true, false);
         previousWordButton.setOnAction((ActionEvent event) -> {
             showWord(-1);
         });
@@ -173,10 +171,7 @@ public class AddNewWordsScene extends BorderPane {
          * words list of the dictionary, then clears all fields and
          * textareas, saveWordsButton set enabled
          */
-        nextWordButton = new Button("Next Word");
-        nextWordButton.setDisable(true);
-        nextWordButton.setDefaultButton(true);
-        nextWordButton.setPrefSize(120, 20);
+        nextWordButton = new MyButton("Next Word", "simpleButton", true, true);
         nextWordButton.setOnAction((ActionEvent event) -> {
             makeWord();
         });
@@ -189,7 +184,7 @@ public class AddNewWordsScene extends BorderPane {
          * clears the list of wordList and sets saveWordsButton
          * disabled
          */
-        saveWordsButton = new Button("Save");
+        saveWordsButton = new MyButton("Save", "simpleButton", true, false);
         saveWordsButton.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
@@ -198,10 +193,8 @@ public class AddNewWordsScene extends BorderPane {
                 }
             }
         });
-        saveWordsButton.setDisable(true);
-        saveWordsButton.setPrefSize(80, 20);
         saveWordsButton.setOnAction((ActionEvent event) -> {
-            
+            saveWords();
         });
 
         /**
@@ -258,7 +251,7 @@ public class AddNewWordsScene extends BorderPane {
         String wordDefinition = definitionTextArea.getText();
         if (wordDefinition.isEmpty())  wordDefinition = " ";
         currentWord = new Word(englishTranslation, lituanianTranslation, exampleSentence, pos, wordDefinition);
-        System.out.print(wordIndex + " " + wordList.size());
+        //System.out.print(wordIndex + " " + wordList.size());
         if (wordIndex < wordList.size()) {
             wordList.set(wordIndex, currentWord);
         } else {
@@ -269,8 +262,9 @@ public class AddNewWordsScene extends BorderPane {
         if (wordIndex > 0)
             previousWordButton.setDisable(false);
     }
-    
+
     private void saveWords() {
+        makeWord();
         try {
                 try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(dictionariesDir + dict, true), "UTF-8"))) {
                     for(Word w:wordList) {
@@ -287,6 +281,7 @@ public class AddNewWordsScene extends BorderPane {
         		}
             wordList.clear();
             saveWordsButton.setDisable(true);
+            previousWordButton.setDisable(true);
     }
 
     /**

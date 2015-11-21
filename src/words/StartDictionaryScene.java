@@ -60,7 +60,7 @@ public class StartDictionaryScene extends BorderPane {
     private final TextArea definition;
     private final TextArea example;
     private final VBox buttonArea;
-    private final Button submitButton;
+    private MyButton submitButton;
     
     private boolean isShowAnswer;
     private String correctAnswer;
@@ -151,9 +151,8 @@ public class StartDictionaryScene extends BorderPane {
          *      words left, show statistics. Else, next word. 
          */
         buttonArea = new VBox();
-        submitButton = new Button();
+        submitButton = new MyButton("Submit", "simpleButton", false, true);
         submitButton.setPrefWidth(120);
-        submitButton.setDefaultButton(true);
         submitButton.setOnAction((ActionEvent event) -> {
             if (isShowAnswer) {                                                             // show if user was correct OR show next Word
                 showAnswer();

@@ -54,7 +54,7 @@ public class MenuWindow extends Application {
 
         //String path = MenuWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         //p = Paths.get(URI.create("file:" + path));
-       
+
         programView = new Scene(new VBox(), 450, 340);
 
         /**
@@ -112,7 +112,7 @@ public class MenuWindow extends Application {
                     VBox pop = new VBox();
                     pop.getStyleClass().add("pop");
 
-                    Button submitButton = new Button("Submit");
+                    MyButton submitButton = new MyButton("Submit", "simpleButton", true, true);
                     submitButton.setDisable(true);          // Submit button is disabled until no dictionary is chosen and new name is not entered
 
                     Label newDictionaryNameLabel = new Label("New Dictionary Name");
@@ -142,7 +142,7 @@ public class MenuWindow extends Application {
                         }
                     });
 
-                    Button cancelButton = new Button("Cancel");
+                    MyButton cancelButton = new MyButton("Cancel", "simpleButton", false, false);
                     cancelButton.setCancelButton(true);                 // fires when ESC is pressed
                     cancelButton.setOnAction((ActionEvent f) -> {       // if Cancel pressed - hide Popup
                        popup.hide();
@@ -195,7 +195,7 @@ public class MenuWindow extends Application {
 
                     HBox buttons = new HBox();
 
-                    Button submitButton = new Button("Submit");
+                    MyButton submitButton = new MyButton("Submit", "simpleButton", true, true);
                     submitButton.setDisable(true);  // Submit button is disabled until no dictionary is chosen
                     submitButton.setDefaultButton(true);
                     submitButton.setOnAction((ActionEvent f) -> {   // if Submit pressed - deletes the chosen dictionary and hide Popup
@@ -203,7 +203,7 @@ public class MenuWindow extends Application {
                        popup.hide();
                     });
 
-                    Button cancelButton = new Button("Cancel");
+                    MyButton cancelButton = new MyButton("Cancel", "simpleButton", false, false);
                     cancelButton.setCancelButton(true);
                     cancelButton.setOnAction((ActionEvent f) -> {
                        popup.hide();
@@ -351,13 +351,10 @@ public class MenuWindow extends Application {
 
         /**
          * Start Learning Button
-         *      Css class: menuButtons
          *      When pressed:   creates an instance of a class ChooseDictionaryScene with option keyword "start",
          *                      gives the instance the list of dictionaries and Program view
          */
-        Button sDictionaryButton = new Button();
-        sDictionaryButton.setText("Start Learning");
-        sDictionaryButton.getStyleClass().add("menuButtons");
+        MyButton sDictionaryButton = new MyButton("Start Learning", "menuButtons", false, false);
         sDictionaryButton.setOnAction((ActionEvent event) -> {
             ChooseDictionaryScene chooseDicScene = new ChooseDictionaryScene(dicts, "start", programView);
             PrepareView();
@@ -366,13 +363,10 @@ public class MenuWindow extends Application {
 
         /**
          * Create New Dictionary Button
-         *      Css class: menuButtons
          *      When pressed:   creates an instance of a class CreateDictionaryScene,
          *                      gives the instance the list of dictionaries and Program view
          */
-        Button cDictionaryButton = new Button();
-        cDictionaryButton.setText("Create New Dictionary");
-        cDictionaryButton.getStyleClass().add("menuButtons");
+        MyButton cDictionaryButton = new MyButton("Create New Dictionary", "menuButtons", false, false);
         cDictionaryButton.setOnAction((ActionEvent event) -> {
             CreateDictionaryScene createDicScene = new CreateDictionaryScene(dicts, programView);
             PrepareView();
@@ -381,13 +375,10 @@ public class MenuWindow extends Application {
 
         /**
          * Add New Words Button
-         *      Css class: menuButtons
          *      When pressed:   creates an instance of a class ChooseDictionaryScene with option keyword "add",
          *                      gives the instance the list of dictionaries and Program view
          */
-        Button aDictionaryButton = new Button();
-        aDictionaryButton.setText("Add New Words");
-        aDictionaryButton.getStyleClass().add("menuButtons");
+        MyButton aDictionaryButton = new MyButton("Add New Words", "menuButtons", false, false);
         aDictionaryButton.setOnAction((ActionEvent event) -> {
             ChooseDictionaryScene chooseDicScene = new ChooseDictionaryScene(dicts, "add", programView);
             PrepareView();

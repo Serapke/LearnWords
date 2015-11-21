@@ -45,7 +45,7 @@ public class ChooseDictionaryScene extends BorderPane {
         Label chooseDictionaryLabel = new Label("Choose Dictionary");
         chooseDictionaryLabel.getStyleClass().add("cLabel");
         
-        Button startButton = new Button("Load");
+        MyButton startButton = new MyButton("Load", "simpleButton", true, true);
         
         /**
          * ChoiceBox for choosing a dictionary from the list

@@ -53,12 +53,13 @@ public class ChangeDictionaryScene extends BorderPane {
     private TextArea exampleTextArea;
     private final ChoiceBox partOfSpeech;
     private TextArea definitionTextArea;
-    private Button deleteWordButton;
-    private Button nextWordButton;
-    private Button saveWordsButton;
+    private MyButton previousWordButton;
+    private MyButton deleteWordButton;
+    private MyButton nextWordButton;
+    private MyButton saveWordsButton;
     
     private Word currentWord;
-    private int currentWordIndex;
+    private int wordIndex;
     
     private String dictDir;
     
@@ -66,8 +67,8 @@ public class ChangeDictionaryScene extends BorderPane {
     public ChangeDictionaryScene(File dictionary) {
         wordList = new ArrayList<Word>();
         File jarFile = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
-        dictDir = jarFile.getParent() + "/Dictionaries/";
-        
+        dictDir = jarFile.getParentFile().getParent() + "/Dictionaries/";
+        wordIndex = 0;
         /**
          * Label "English"
          * Css class - wordsLabel
@@ -115,9 +116,20 @@ public class ChangeDictionaryScene extends BorderPane {
         lithuanianTextArea.setPrefColumnCount(20);
         lithuanianTextArea.setPrefRowCount(2);
         lithuanianTextArea.setWrapText(true);
-        if ("".equals(lithuanianTextArea.getText())) {
-           // nextWordButton.setDisable(true);
-        }
+        lithuanianTextArea.textProperty().addListener((final ObservableValue<? extends String> observable, final String oldValue, final String newValue) -> {
+            if (lithuanianTextArea.getText().isEmpty()) {
+                nextWordButton.setDisable(true);
+                saveWordsButton.setDisable(true);
+            }
+            // if textarea not empty and pos is chosen
+            else if ((!lithuanianTextArea.getText().isEmpty()) && (posID > 0)) {
+                if (wordIndex >= wordList.size()-1)
+                    saveWordsButton.setDisable(false);
+                else
+                    nextWordButton.setDisable(false);
+            }
+
+        });
         
         /**
          * ChoiceBox for part of speech of the current word
@@ -130,6 +142,7 @@ public class ChangeDictionaryScene extends BorderPane {
             public void changed(ObservableValue ov, Number value, Number new_value)  {
                 if (new_value.intValue() > 0) {
                     posID = new_value.intValue();
+                    if (wordIndex != wordList.size()-1)
                     nextWordButton.setDisable(false);
                 }
                 else if (new_value.intValue() == 0) {
@@ -192,21 +205,20 @@ public class ChangeDictionaryScene extends BorderPane {
         definitionTextArea.setPrefRowCount(3);
         definitionTextArea.setWrapText(true);
         
+        previousWordButton = new MyButton("Previous", "simpleButton", true, false);
+        previousWordButton.setOnAction((ActionEvent event) -> {
+            showWord(-1);
+        });
         /**
          * Button "Delete Word"
          * When pressed, deletes the current word from the dictionary
          * and if it was not the last word of the list, shows the next
          * word, if it was sets itself disabled
          */
-        deleteWordButton = new Button("Delete Word");
-        deleteWordButton.setPrefSize(140, 20);
+        deleteWordButton = new MyButton("Delete", "simpleButton", false, false);
         deleteWordButton.setOnAction((ActionEvent event) -> {
-            currentWordIndex--;
-            wordList.remove(currentWordIndex);
-            if (currentWordIndex < wordList.size())
-                showNextWord();
-            else 
-                deleteWordButton.setDisable(true);
+            //System.out.println("wordIndex " + wordIndex + ", wordList.size() " + wordList.size());
+            deleteWord();
         });
         
         /**
@@ -214,12 +226,10 @@ public class ChangeDictionaryScene extends BorderPane {
          * When "Enter" pressed, fire the button
          * When pressed, change word and show next word on the fields
          */
-        nextWordButton = new Button("Next Word");
-        nextWordButton.setDefaultButton(true);
-        nextWordButton.setPrefSize(120, 20);
+        nextWordButton = new MyButton("Next", "simpleButton", false, true);
         nextWordButton.setOnAction((ActionEvent event) -> {
             changeWord();
-            showNextWord();
+            showWord(1);
         });
         
         /**
@@ -229,7 +239,7 @@ public class ChangeDictionaryScene extends BorderPane {
          * When pressed, change last word in the dictionary, save
          * them and disable all fields
          */
-        saveWordsButton = new Button("Save");
+        saveWordsButton = new MyButton("Save", "simpleButton", false, false);
         saveWordsButton.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
             public void handle(KeyEvent event) {
                 if (new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN).match(event)) {
@@ -237,13 +247,12 @@ public class ChangeDictionaryScene extends BorderPane {
                 }
             }
         });
-        saveWordsButton.setDisable(true);
-        saveWordsButton.setPrefSize(80, 20);
         saveWordsButton.setOnAction((ActionEvent event) -> {
                 changeWord();
                 saveWords(dictionary);
                 finish();
                 saveWordsButton.setDisable(true);
+                previousWordButton.setDisable(true);
         });
         
         /**
@@ -276,7 +285,7 @@ public class ChangeDictionaryScene extends BorderPane {
          * HBox for buttons
          */
         HBox actionButtons = new HBox();
-        actionButtons.getChildren().addAll(deleteWordButton, nextWordButton, saveWordsButton);
+        actionButtons.getChildren().addAll(previousWordButton, deleteWordButton, nextWordButton, saveWordsButton);
         actionButtons.setPadding(new Insets(15, 12, 15, 12));
         actionButtons.setSpacing(10);
         actionButtons.setAlignment(Pos.BASELINE_RIGHT);
@@ -309,7 +318,7 @@ public class ChangeDictionaryScene extends BorderPane {
         }
         
         
-        showNextWord();
+        showWord(1);
     }
     
     /**
@@ -324,25 +333,12 @@ public class ChangeDictionaryScene extends BorderPane {
         }
     }
     
-    /**
-     * Shows next Word from wordsList in textfields and textareas
-     */
-    private void showNextWord() {
-        if (currentWordIndex == wordList.size()-1) {
-            nextWordButton.setDisable(true);
-            saveWordsButton.setDisable(false);
-            deleteWordButton.setDisable(true);
-            System.err.println("No more words to change. If you want to add more words to the dictionary"
-                                                        + " simply go to HOME view and select ADD NEW WORDS");
-        }
+    private void deleteWord() {
+        wordList.remove(wordIndex);
+        if (wordIndex < wordList.size())
+            showWord(1);
         else {
-            currentWord = wordList.get(currentWordIndex);
-            currentWordIndex++;
-            englishTextField.setText(currentWord.getEnglish());
-            lithuanianTextArea.setText(currentWord.getLithuanian());
-            partOfSpeech.getSelectionModel().select(currentWord.getPartOfSpeech());
-            definitionTextArea.setText(currentWord.getDefinition());
-            exampleTextArea.setText(currentWord.getExampleSentence());
+            showWord(-1);
         }
     }
     
@@ -361,6 +357,9 @@ public class ChangeDictionaryScene extends BorderPane {
            currentWord.setExampleSentence(" ");
         else
             currentWord.setDefinition(definitionTextArea.getText());
+        wordList.set(wordIndex++, currentWord);
+        if (wordIndex > 0)
+            previousWordButton.setDisable(false);
     }
     
     /**
@@ -382,6 +381,27 @@ public class ChangeDictionaryScene extends BorderPane {
         } catch (IOException ex) {
             System.out.print(ex + " Error in ChangeDictionaryScene!");
         }
+        wordList.clear();
+    }
+    
+    private void showWord(int direction) {
+      if ((direction < 0) && (wordIndex > 0)) {                        // show previous word
+        currentWord = wordList.get(--wordIndex);
+        if (wordIndex == 0)
+          previousWordButton.setDisable(true);
+      } else {                                                          // show next word
+        currentWord = wordList.get(wordIndex);
+        //System.out.println(wordIndex + " - " + wordList.size());
+        if (wordIndex == wordList.size()-1)
+            nextWordButton.setDisable(true);
+      }
+        if (1 == wordList.size()) 
+            deleteWordButton.setDisable(true);
+        englishTextField.setText(currentWord.getEnglish());
+        lithuanianTextArea.setText(currentWord.getLithuanian());
+        exampleTextArea.setText(currentWord.getExampleSentence());
+        definitionTextArea.setText(currentWord.getDefinition());
+        partOfSpeech.getSelectionModel().select(currentWord.getPartOfSpeech());
     }
     
     /**

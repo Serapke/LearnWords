@@ -30,7 +30,7 @@ public class Dictionaries extends ArrayList<String> {
     
     public Dictionaries() {
         File jarFile = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
-        dictDir = jarFile.getParent() + "/Dictionaries/";
+        dictDir = jarFile.getParentFile().getParent() + "/Dictionaries/";
         readDicts();
     }
     

@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -30,10 +31,12 @@ public class CreateDictionaryScene extends GridPane {
     private String dictionaryName;
     private File dictionary;
     private String dictDir;
+    private MyButton createButton;
+    private MyButton clearButton;
     
     public CreateDictionaryScene(Dictionaries dicts, Scene scene) {
         File jarFile = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
-        dictDir = jarFile.getParent() + "/Dictionaries/";
+        dictDir = jarFile.getParentFile().getParent() + "/Dictionaries/";
         /**
          * Label "Name of the dictionary"
          */
@@ -43,14 +46,23 @@ public class CreateDictionaryScene extends GridPane {
          * TextField for the name of the dictionary
          */
         final TextField nameDictionaryTextField = new TextField();
+        nameDictionaryTextField.textProperty().addListener((final ObservableValue<? extends String> observable, final String oldValue, final String newValue) -> {
+            if (nameDictionaryTextField.getText().isEmpty()) {
+                createButton.setDisable(true);
+                clearButton.setDisable(true);
+            }
+            else {
+                createButton.setDisable(false);
+                clearButton.setDisable(false);
+            }
+        });
         nameDictionaryTextField.setPrefColumnCount(10);
         
         /**
          * Button "Create"
          * On default - disabled
          */
-        Button createButton = new Button("Create");
-        createButton.setDefaultButton(true);
+        createButton = new MyButton("Create", "simpleButton", true, true);
         createButton.setOnAction((ActionEvent event) -> {
             dictionaryName = nameDictionaryTextField.getText();
             /**
@@ -75,7 +87,7 @@ public class CreateDictionaryScene extends GridPane {
          * Button "Clear"
          * If pressed, then clears the field nameDictionaryTextField
          */
-        Button clearButton = new Button("Clear");
+        clearButton = new MyButton("Clear", "simple", true, false);
         clearButton.setOnAction((ActionEvent event) -> {
             nameDictionaryTextField.clear(); 
         });

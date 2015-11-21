@@ -47,7 +47,7 @@ MenuBar {
 /*
     The default look of Buttons in a program
 */
-Button {
+MyButton {
     -fx-padding: 5px 20px 5px 20px;
     -fx-border-radius: 0;
     -fx-text-fill: #fff;
@@ -55,7 +55,7 @@ Button {
     -fx-background-color: #FF3030;
     -fx-effect: dropshadow( gaussian , #000 , 0,0,0,1 );
 }
-Button:hover {
+MyButton:hover {
     -fx-background-color: #FF4040;
 }
 /*
@@ -69,6 +69,10 @@ Label {
 */
 Text {
     -fx-font-weight: bold;
+}
+
+.simpleButton {
+    
 }
 
 
