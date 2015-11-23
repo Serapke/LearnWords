@@ -23,9 +23,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
@@ -33,16 +31,16 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 /**
  * A class for changing the words in the dictionary.
  * Takes a file of the dictionary.
  * @author Mantas
  */
-public class ChangeDictionaryScene extends BorderPane {
+public class ChangeDictionaryScene extends MyBorderPane {
     
     private final String[] posList = new String[] {"Part Of Speech", "Verb", "Noun", "Adverb", "Adjective"};
     private int posID;
@@ -69,12 +67,8 @@ public class ChangeDictionaryScene extends BorderPane {
         File jarFile = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
         dictDir = jarFile.getParentFile().getParent() + "/Dictionaries/";
         wordIndex = 0;
-        /**
-         * Label "English"
-         * Css class - wordsLabel
-         */
-        Label englishLabel = new Label("English");
-        englishLabel.getStyleClass().add("wordsLabel");
+
+        MyLabel englishLabel = new MyLabel("English", "formLabel");
         
         /**
          * TextField for the english translation of the current word
@@ -82,12 +76,7 @@ public class ChangeDictionaryScene extends BorderPane {
         englishTextField = new TextField("");
         englishTextField.setPrefColumnCount(10);
         
-        /**
-         * Label "Lithuanian"
-         * Css class - wordsLabel
-         */
-        Label lithuanianLabel = new Label("Lithuanian");
-        lithuanianLabel.getStyleClass().add("wordsLabel");
+        MyLabel lithuanianLabel = new MyLabel("Lithuanian", "formLabel");
         
         /**
          * Tooltip for lithuanianTextArea
@@ -143,7 +132,8 @@ public class ChangeDictionaryScene extends BorderPane {
                 if (new_value.intValue() > 0) {
                     posID = new_value.intValue();
                     if (wordIndex != wordList.size()-1)
-                    nextWordButton.setDisable(false);
+                        nextWordButton.setDisable(false);
+                   saveWordsButton.setDisable(false);
                 }
                 else if (new_value.intValue() == 0) {
                     nextWordButton.setDisable(true);
@@ -152,11 +142,7 @@ public class ChangeDictionaryScene extends BorderPane {
             }
         });
         
-        /**
-         * Label "Example Sentence"
-         * Css class - wordsLabel
-         */
-        Label exampleLabel = new Label("Example Sentence");
+        MyLabel exampleLabel = new MyLabel("Example Sentence", "formLabel");
         exampleLabel.getStyleClass().add("wordsLabel");
         
         /**
@@ -178,11 +164,7 @@ public class ChangeDictionaryScene extends BorderPane {
         exampleTextArea.setPrefRowCount(3);
         exampleTextArea.setWrapText(true);
         
-        /**
-         * Label "Definition"
-         * Css class - wordsLabel
-         */
-        Label definitionLabel = new Label("Definition");
+        MyLabel definitionLabel = new MyLabel("Definition", "formLabel");
         definitionLabel.getStyleClass().add("wordsLabel");
         
         /**
@@ -250,9 +232,7 @@ public class ChangeDictionaryScene extends BorderPane {
         saveWordsButton.setOnAction((ActionEvent event) -> {
                 changeWord();
                 saveWords(dictionary);
-                finish();
-                saveWordsButton.setDisable(true);
-                previousWordButton.setDisable(true);
+                showSavedView();
         });
         
         /**
@@ -409,15 +389,14 @@ public class ChangeDictionaryScene extends BorderPane {
      * in the wordList ends
      */
     private void finish() {
-        englishTextField.setText("");
-        englishTextField.setDisable(true);
-        lithuanianTextArea.setText("");
-        lithuanianTextArea.setDisable(true);
-        exampleTextArea.setText("");
-        exampleTextArea.setDisable(true);
-        definitionTextArea.setText("");
-        definitionTextArea.setDisable(true);
-        partOfSpeech.getSelectionModel().selectFirst();
-        partOfSpeech.setDisable(true);
+        MyLabel finish = new MyLabel("Your changes have been saved!", "h1");
+        MyLabel goHome = new MyLabel("You can go to Home display by:\n 1) Selecting: File > Home \n 2) Using keyboard shortcut: CTRL + H", "suggestion");
+        VBox finishVBox = new VBox();
+        finishVBox.getChildren().addAll(finish, goHome);
+        finishVBox.setAlignment(Pos.CENTER);
+        finishVBox.setSpacing(20);
+        finishVBox.setPadding(new Insets(20, 0, 0, 0));
+        setCenter(finishVBox);
+        setBottom(null);
     }   
 }

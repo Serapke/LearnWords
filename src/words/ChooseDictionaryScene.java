@@ -12,9 +12,7 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
@@ -38,12 +36,8 @@ public class ChooseDictionaryScene extends BorderPane {
     @SuppressWarnings({"Convert2Lambda", "ConvertToStringSwitch"})
     
     public ChooseDictionaryScene(Dictionaries dicts, String mode, Scene scene) {
-        /**
-         * Label "Choose Dictionary"
-         * Css class - cLabel
-         */
-        Label chooseDictionaryLabel = new Label("Choose Dictionary");
-        chooseDictionaryLabel.getStyleClass().add("cLabel");
+
+        MyLabel chooseDictionaryLabel = new MyLabel("Choose Dictionary", "h2");
         
         MyButton startButton = new MyButton("Load", "simpleButton", true, true);
         
@@ -92,7 +86,7 @@ public class ChooseDictionaryScene extends BorderPane {
                 ((VBox) scene.getRoot()).getChildren().add(newWords);
             }
             else if ("start".equals(mode)) {
-                StartDictionaryScene startDictionary = new StartDictionaryScene(englishLithuanian, makeFile(dicts), scene);
+                StartDictionaryScene startDictionary = new StartDictionaryScene(englishLithuanian, makeFile(dicts));
                 ((VBox) scene.getRoot()).getChildren().remove(1);
                 ((VBox) scene.getRoot()).getChildren().add(startDictionary);
             }
@@ -123,8 +117,7 @@ public class ChooseDictionaryScene extends BorderPane {
             chooseLanguageMenu.setPadding(new Insets(30, 0, 10, 0));
             chooseLanguageMenu.setAlignment(Pos.BASELINE_CENTER);
             
-            Label chooseLanguageLabel = new Label("Choose Language");
-            chooseLanguageLabel.getStyleClass().add("cLabel");
+            MyLabel chooseLanguageLabel = new MyLabel("Choose Language", "h2");
             
             /**
              * HBox for the Radiobuttons

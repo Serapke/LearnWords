@@ -15,8 +15,6 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -37,10 +35,8 @@ public class CreateDictionaryScene extends GridPane {
     public CreateDictionaryScene(Dictionaries dicts, Scene scene) {
         File jarFile = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
         dictDir = jarFile.getParentFile().getParent() + "/Dictionaries/";
-        /**
-         * Label "Name of the dictionary"
-         */
-        Label nameDictionaryLabel = new Label("Name of the dictionary");
+
+        MyLabel nameDictionaryLabel = new MyLabel("Name of the dictionary", "h2");
         
         /**
          * TextField for the name of the dictionary

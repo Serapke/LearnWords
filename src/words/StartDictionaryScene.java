@@ -19,8 +19,6 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -53,10 +51,10 @@ public class StartDictionaryScene extends BorderPane {
     private int wordsCount;
     private int errCount;
     
-    private final Label wordLabel;
+    private final MyLabel wordLabel;
     private final TextField translationTextField;
-    private final Label posLabel;
-    private final Label correctAnswerLabel;
+    private final MyLabel posLabel;
+    private final MyLabel correctAnswerLabel;
     private final TextArea definition;
     private final TextArea example;
     private final VBox buttonArea;
@@ -71,7 +69,7 @@ public class StartDictionaryScene extends BorderPane {
     private final ImageView wordStatusImage;
     private Image correctWordImage;
     private Image wrongWordImage;
-    private final Label wordStatusLabel;
+    private final MyLabel wordStatusLabel;
     
     private boolean showStatistics;
     
@@ -79,7 +77,7 @@ public class StartDictionaryScene extends BorderPane {
     private java.net.URL imgURL;
     
     
-    public StartDictionaryScene(boolean mode, File file, Scene scene) {
+    public StartDictionaryScene(boolean mode, File file) {
         File jarFile = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
         dictDir = jarFile.getParent() + "/Dictionaries/";
         imgURL = MenuWindow.class.getResource("Images");
@@ -88,28 +86,14 @@ public class StartDictionaryScene extends BorderPane {
         dictionary = file;
         translationMode = mode;
         
-        /**
-         * Label "Word"
-         */
-        wordLabel = new Label("Word");
+        wordLabel = new MyLabel("Word", "formLabel");
         
-        /**
-         * A TextField for the translation of the word
-         */
         translationTextField = new TextField();
         translationTextField.setPrefColumnCount(20);  
         
-        /**
-         * Part of Speech label
-         * Changes depending on the word
-         */
-        posLabel = new Label("Part of Speech");
+        posLabel = new MyLabel("Part of Speech", "formLabel");
         
-        /**
-         * Correct answer label
-         * Shows correct answers after submitting user's choice
-         */
-        correctAnswerLabel = new Label("Correct answer");
+        correctAnswerLabel = new MyLabel("Correct answer", "formLabel");
         
         /**
          * The status of answer's correctness
@@ -117,7 +101,7 @@ public class StartDictionaryScene extends BorderPane {
          */
         wordStatus = new HBox();
         wordStatusImage = new ImageView();
-        wordStatusLabel = new Label(); 
+        wordStatusLabel = new MyLabel("", "statusLabel"); 
         wordStatus.setSpacing(5);
         wordStatus.getChildren().addAll(wordStatusImage, wordStatusLabel);
         
@@ -282,9 +266,8 @@ public class StartDictionaryScene extends BorderPane {
                  */
                 if (oneOfPossibleAnswers.equals(userAnswer)) {                          // if one of the correct answers is a user's answer
                     foundCorrectAnswer = true;                                          // correct answer found
-                    correctWordImage = new Image(imgURL + "/checkmark.png");                 // gets an image "checkmark"
-                    wordStatusLabel.setText("Correct!");                                // shows "Correct!"
-                    wordStatusLabel.setId("green");                                     // paints "Correct!" green
+                    correctWordImage = new Image(imgURL + "/checkmark.png");                 // gets an image "checkmark"                        // shows "Correct!"
+                    wordStatusLabel.adjustLabel("Correct!", "green"); 
                     wordStatusImage.setImage(correctWordImage);                         // set the image
                     break;                                                              // stop the cycle
                 }
@@ -296,8 +279,7 @@ public class StartDictionaryScene extends BorderPane {
                 errCount++;                                                             // one more error found
                 wrongWordList.add(currentWord);
                 wrongWordImage = new Image(imgURL + "/x-mark.png");                          // gets an image "x-mark"
-                wordStatusLabel.setText("Wrong!");                                      // shows "Wrong!"
-                wordStatusLabel.setId("red");                             // paints "Wrong!" red
+                wordStatusLabel.adjustLabel("Wrong!", "red");
                 wordStatusImage.setImage(wrongWordImage);                               // set the image
             }
             /**
@@ -407,23 +389,16 @@ public class StartDictionaryScene extends BorderPane {
      */
     private void showStatisticsGrid() {
         
-        /**
-         * The name of the dictionary label
-         */
         dictionaryName = dictionary.toString();
         dictionaryName = dictionaryName.substring(0, dictionaryName.length()-4);
         dictionaryName = dictionaryName.toUpperCase();
-        Label dictionaryNameLabel = new Label(dictionaryName);
-        dictionaryNameLabel.getStyleClass().add("dictionaryName");
+        MyLabel dictionaryNameLabel = new MyLabel(dictionaryName, "h2");
         
-        /**
-         * Words, correct and wrong answers count
-         */
-        Label wordsCountLabel = new Label("Words count:");
+        MyLabel wordsCountLabel = new MyLabel("Words count:", "formLabel");
         Text wordsCountText = new Text(String.valueOf(wordsCount));
-        Label correctAnswersLabel = new Label("Correct answers:");
+        MyLabel correctAnswersLabel = new MyLabel("Correct answers:", "formLabel");
         Text correctAnswersCountText = new Text(String.valueOf(wordsCount-errCount));
-        Label wrongAnswersLabel = new Label("Wrong answers:");
+        MyLabel wrongAnswersLabel = new MyLabel("Wrong answers:", "formLabel");
         Text wrongAnswersCountText = new Text(String.valueOf(errCount));
         
         /**

@@ -12,10 +12,8 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -99,9 +97,7 @@ public class MenuWindow extends Application {
                 /**
                  * Rename Dictionary
                  *      On Action:  Creates a Popup with
-                 *                      Label "Choose Dictionary to be Renamed"
                  *                      ChoiceBox with the list of Dictionaries
-                 *                      Label "New Dictionary Name"
                  *                      TextField to enter a new dictionary name
                  *                      Submit and Cancel buttons
                  *
@@ -115,8 +111,7 @@ public class MenuWindow extends Application {
                     MyButton submitButton = new MyButton("Submit", "simpleButton", true, true);
                     submitButton.setDisable(true);          // Submit button is disabled until no dictionary is chosen and new name is not entered
 
-                    Label newDictionaryNameLabel = new Label("New Dictionary Name");
-                    newDictionaryNameLabel.getStyleClass().add("popupLabel");
+                    MyLabel newDictionaryNameLabel = new MyLabel("New Dictionary Name", "popupLabel");
 
                     TextField newNameTextField = new TextField();
                     newNameTextField.textProperty().addListener((final ObservableValue<? extends String> observable, final String oldValue, final String newValue) -> {
@@ -153,8 +148,7 @@ public class MenuWindow extends Application {
                     buttons.setSpacing(10);
                     buttons.getChildren().addAll(submitButton, cancelButton);
 
-                    Label deleteDictionaryLabel = new Label("Choose Dictionary to be Renamed");
-                    deleteDictionaryLabel.getStyleClass().add("popupLabel");
+                    MyLabel deleteDictionaryLabel = new MyLabel("Choose Dictionary to be Renamed", "popupLabel");
 
                     ChoiceBox chooseDictionaryBox = new ChoiceBox();
                     chooseDictionaryBox.getItems().addAll(dicts.getCustomDicts());
@@ -182,7 +176,6 @@ public class MenuWindow extends Application {
                 /**
                  * Delete Dictionary
                  *      On Action:  Creates a Popup with
-                 *                      Label "Choose Dictionary to be Deleted"
                  *                      ChoiceBox with the list of Dictionaries
                  *                      Submit and Cancel buttons
                  *
@@ -212,8 +205,7 @@ public class MenuWindow extends Application {
                     buttons.setSpacing(10);
                     buttons.getChildren().addAll(submitButton, cancelButton);
 
-                    Label deleteDictionaryLabel = new Label("Choose Dictionary to be Deleted");
-                    deleteDictionaryLabel.getStyleClass().add("popupLabel");
+                    MyLabel deleteDictionaryLabel = new MyLabel("Choose Dictionary to be Deleted", "popupLabel");
 
                     ChoiceBox chooseDictionaryBox = new ChoiceBox();
                     chooseDictionaryBox.getItems().addAll(dicts.getCustomDicts());
@@ -345,9 +337,7 @@ public class MenuWindow extends Application {
          * Main Menu (mainMenu) components
          */
 
-        Label programViewTitle = new Label();
-        programViewTitle.setText("Learn Your Words!");
-        programViewTitle.setId("title");
+        MyLabel programViewTitle = new MyLabel("Learn Your Words!", "title");
 
         /**
          * Start Learning Button

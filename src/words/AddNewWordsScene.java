@@ -21,7 +21,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
@@ -29,7 +28,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
@@ -37,7 +35,7 @@ import javafx.scene.layout.HBox;
  * A class for adding new words to an existing dictionary
  * @author Mantas
  */
-public class AddNewWordsScene extends BorderPane {
+public class AddNewWordsScene extends MyBorderPane {
 
     private final String[] posList = new String[] {"Part Of Speech", "Verb", "Noun", "Adverb", "Adjective"};
     private int posID;
@@ -66,11 +64,11 @@ public class AddNewWordsScene extends BorderPane {
         wordList = new ArrayList<Word>();
         wordIndex = 0;
 
-        Label englishLabel = new Label("English");
+        MyLabel englishLabel = new MyLabel("English", "formLabel");
         englishTextField = new TextField("");
         englishTextField.setPrefColumnCount(10);
 
-        Label lithuanianLabel = new Label("Lithuanian");
+        MyLabel lithuanianLabel = new MyLabel("Lithuanian", "formLabel");
         lithuanianTextArea = new TextArea();
         lithuanianTextArea.setTooltip(useCommasTip);
         lithuanianTextArea.addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent e) -> {
@@ -100,7 +98,7 @@ public class AddNewWordsScene extends BorderPane {
 
         });
 
-        Label exampleLabel = new Label("Example Sentence");
+        MyLabel exampleLabel = new MyLabel("Example Sentence", "formLabel");
         exampleTextArea = new TextArea("");
         exampleTextArea.addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent e) -> {
             if (e.getCode() == KeyCode.TAB) {
@@ -142,7 +140,7 @@ public class AddNewWordsScene extends BorderPane {
             }
         });
 
-        Label definitionLabel = new Label("Definition");
+        MyLabel definitionLabel = new MyLabel("Definition", "formLabel");
         definitionTextArea = new TextArea("");
         definitionTextArea.addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent e) -> {
             if (e.getCode() == KeyCode.TAB) {
@@ -195,6 +193,7 @@ public class AddNewWordsScene extends BorderPane {
         });
         saveWordsButton.setOnAction((ActionEvent event) -> {
             saveWords();
+            showSavedView();
         });
 
         /**
@@ -280,8 +279,6 @@ public class AddNewWordsScene extends BorderPane {
                             System.err.println("Couldn't save the file!");
         		}
             wordList.clear();
-            saveWordsButton.setDisable(true);
-            previousWordButton.setDisable(true);
     }
 
     /**

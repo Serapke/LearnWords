@@ -16,6 +16,30 @@ and open the template in the editor.
      //-fx-background-image: url("background.jpg");
      -fx-background-color: #4ECDC4;
 }
+.title {
+    -fx-font-size: 40px;
+    -fx-font-family: "Arial Black";
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 0,0,0,1 );
+}
+.h1, .h2 {
+    -fx-font-family: "Arial Black";
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 0,0,0,1 );
+    -fx-font-weight: bold;
+}
+.h1 {
+    -fx-font-size: 20px;  
+}
+.h2 {
+    -fx-font-size: 18px;
+}
+.suggestion {
+    -fx-font-size: 16px;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Arial";
+}
 /*
     The look of programs popups
 */
@@ -30,11 +54,7 @@ and open the template in the editor.
     -fx-border-width: 4px;
     -fx-effect: dropshadow( gaussian , rgba(0,0,0,1) , 0,0,0,1 );
 }
-.popupLabel {
-    -fx-font-weight: bold;
-    -fx-font-size: 14px;
-    -fx-text-fill: #4ECDC4;
-}
+
 /*
     The look of program's menu bar
 */
@@ -70,22 +90,40 @@ Label {
 Text {
     -fx-font-weight: bold;
 }
+ChoiceBox Label  {
+    -fx-text-fill: #505050;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian , #FFFFFF , 0,0,0,1 );
+}
+
+
+
 
 .simpleButton {
     
 }
-
-
-/************************** MenuWindow.java ***********************************/
-/*
-    The look of the programViewTitle Label in MenuWindow.java class
-*/
-#title {
-    -fx-font-size: 40px;
-    -fx-font-family: "Arial Black";
-    -fx-font-weight: bold;
+.formLabel {
     -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
     -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 0,0,0,1 );
+}
+.green {
+    -fx-text-fill: #09B009;
+    -fx-padding: 2px 0 0 0;
+    -fx-font-size: 16px;
+    -fx-effect: dropshadow( gaussian , #909090 , 0,0,0,1 );
+}
+.red {
+    -fx-text-fill: #F00000;
+    -fx-padding: 2px 0 0 0;
+    -fx-font-size: 16px;
+    -fx-effect: dropshadow( gaussian , #909090 , 0,0,0,1 );
+}
+.popupLabel {
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+    -fx-text-fill: #4ECDC4;
 }
 
 /*
@@ -106,17 +144,7 @@ Text {
 }
 
 
-/********************** ChooseDictionaryScene.java ****************************/
-/*
-    The look of the Labels in ChooseDictionaryScene.java class
-*/
-.cLabel {
-    -fx-font-size: 18px;
-    -fx-font-family: "Arial Black";
-    -fx-font-weight: bold;
-    -fx-text-fill: #FFFFFF;
-    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 0,0,0,1 );
-}
+
 /*
     The look of the RadioButtons in ChooseDictionaryScene.java class
 */
@@ -137,65 +165,8 @@ Text {
 .createDictionaryScene {
     -fx-padding: 80px 0 0 0;
 }
-/*
-    The look of Label in CreateDictionaryScene.java class
-*/
-.createDictionaryScene Label {
-    -fx-font-size: 18px;
-    -fx-font-family: "Arial Black";
-    -fx-font-weight: bold;
-    -fx-text-fill: #FFFFFF;
-    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 0,0,0,1 );
-}
-
-
-/********************** addNewWordsScene.java *********************************/
-/*
-    The look of Labels in addNewWordsScene.java class
-*/
-.addNewWordsScene Label {
-    -fx-font-size: 14px;
-    -fx-font-family: "Arial Black";
-    -fx-font-weight: bold;
-    -fx-text-fill: #FFFFFF;
-    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 0,0,0,1 );
-}
-
 
 /****************** StartDictionaryScene.java *********************************/
-/*
-    The look of Labels in StartDictionaryScene.java class
-*/
-.startDictionaryScene Label {
-    -fx-font-size: 16px;
-    -fx-text-fill: fff;
-}
-
-/*
-    Makes the Labels in StartDictionaryScene.java class either green or red
-*/
-#green {
-    -fx-text-fill: #09B009;
-    -fx-font-weight: bold;
-    -fx-padding: 2px 0 0 0;
-    -fx-font-size: 16px;
-    -fx-effect: dropshadow( gaussian , #909090 , 0,0,0,1 );
-}
-#red {
-    -fx-text-fill: #F00000;
-    -fx-font-weight: bold;
-    -fx-padding: 2px 0 0 0;
-    -fx-font-size: 16px;
-    -fx-effect: dropshadow( gaussian , #909090 , 0,0,0,1 );
-}
-
-/*
-    The look of dictionaryName Label in StartDictionaryScene class Statistics overview
-*/
-.statistics .dictionaryName {
-    -fx-font-weight: bold;
-    -fx-font-size: 18px;
-}
 
 /*
     The look of markText in StartDictionaryScene class Statistics overview
