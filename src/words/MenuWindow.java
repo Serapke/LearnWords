@@ -83,6 +83,13 @@ public class MenuWindow extends Application {
                     PrepareView();
                     ((VBox) programView.getRoot()).getChildren().add(mainMenu);
                 });
+                
+                MenuItem viewDictionary = createMenuItem("View Dictionary", "", "CTRL+ALT+V");
+                viewDictionary.setOnAction((ActionEvent e) -> {
+                    ChooseDictionaryScene chooseDicScene = new ChooseDictionaryScene(dicts, "view", programView);
+                    PrepareView();
+                    ((VBox) programView.getRoot()).getChildren().add(chooseDicScene);
+                });
                 /**
                  * Change Dictionary
                  *      On Action:  creates an instance of a class ChooseDictionaryScene with option keyword "change",
@@ -329,7 +336,7 @@ public class MenuWindow extends Application {
                 });
 
         menu.getMenus().addAll(file, help);
-        file.getItems().addAll(home, changeDictionary, renameDictionary, deleteDictionary, new SeparatorMenuItem(), exit);
+        file.getItems().addAll(home, viewDictionary, changeDictionary, renameDictionary, deleteDictionary, new SeparatorMenuItem(), exit);
         help.getItems().addAll(onlineSupport, keyboardShortcuts, about);
 
 

@@ -41,26 +41,26 @@ import javafx.scene.layout.VBox;
  * @author Mantas
  */
 public class ChangeDictionaryScene extends MyBorderPane {
-    
+
     private final String[] posList = new String[] {"Part Of Speech", "Verb", "Noun", "Adverb", "Adjective"};
     private int posID;
     private ArrayList<Word> wordList;
-    
+
     private final TextField englishTextField;
     private TextArea lithuanianTextArea;
     private TextArea exampleTextArea;
     private final ChoiceBox partOfSpeech;
     private TextArea definitionTextArea;
-    private MyButton previousWordButton;
-    private MyButton deleteWordButton;
+    private final MyButton previousWordButton;
+    private final MyButton deleteWordButton;
     private MyButton nextWordButton;
     private MyButton saveWordsButton;
-    
+
     private Word currentWord;
     private int wordIndex;
-    
-    private String dictDir;
-    
+
+    private final String dictDir;
+
     @SuppressWarnings("Convert2Lambda")
     public ChangeDictionaryScene(File dictionary) {
         wordList = new ArrayList<Word>();
@@ -69,22 +69,22 @@ public class ChangeDictionaryScene extends MyBorderPane {
         wordIndex = 0;
 
         MyLabel englishLabel = new MyLabel("English", "formLabel");
-        
+
         /**
          * TextField for the english translation of the current word
          */
         englishTextField = new TextField("");
         englishTextField.setPrefColumnCount(10);
-        
+
         MyLabel lithuanianLabel = new MyLabel("Lithuanian", "formLabel");
-        
+
         /**
          * Tooltip for lithuanianTextArea
          * "Use commas to separate translations"
          */
         final Tooltip lithuanianToolTip = new Tooltip();
         lithuanianToolTip.setText("Use commas to separate translations");
-        
+
         /**
          * TextArea for lithuanian translations of the current word
          * When TAB is pressed, focuses on the next field
@@ -119,7 +119,7 @@ public class ChangeDictionaryScene extends MyBorderPane {
             }
 
         });
-        
+
         /**
          * ChoiceBox for part of speech of the current word
          * If the part of speech is chosen, enables nextWordButton
@@ -141,10 +141,10 @@ public class ChangeDictionaryScene extends MyBorderPane {
                 }
             }
         });
-        
+
         MyLabel exampleLabel = new MyLabel("Example Sentence", "formLabel");
         exampleLabel.getStyleClass().add("wordsLabel");
-        
+
         /**
          * TextArea for example sentence of the current word
          * When TAB is pressed, focuses on the next field
@@ -163,10 +163,10 @@ public class ChangeDictionaryScene extends MyBorderPane {
         exampleTextArea.setPrefColumnCount(20);
         exampleTextArea.setPrefRowCount(3);
         exampleTextArea.setWrapText(true);
-        
+
         MyLabel definitionLabel = new MyLabel("Definition", "formLabel");
         definitionLabel.getStyleClass().add("wordsLabel");
-        
+
         /**
          * TextArea for definition of the current word
          * If TAB is pressed, focuses on the next field
@@ -186,7 +186,7 @@ public class ChangeDictionaryScene extends MyBorderPane {
         definitionTextArea.setPrefColumnCount(15);
         definitionTextArea.setPrefRowCount(3);
         definitionTextArea.setWrapText(true);
-        
+
         previousWordButton = new MyButton("Previous", "simpleButton", true, false);
         previousWordButton.setOnAction((ActionEvent event) -> {
             showWord(-1);
@@ -202,7 +202,7 @@ public class ChangeDictionaryScene extends MyBorderPane {
             //System.out.println("wordIndex " + wordIndex + ", wordList.size() " + wordList.size());
             deleteWord();
         });
-        
+
         /**
          * Button "Next Word"
          * When "Enter" pressed, fire the button
@@ -213,7 +213,7 @@ public class ChangeDictionaryScene extends MyBorderPane {
             changeWord();
             showWord(1);
         });
-        
+
         /**
          * Button "Save"
          * Keyboard Shortcut - CTRL + S
@@ -234,7 +234,7 @@ public class ChangeDictionaryScene extends MyBorderPane {
                 saveWords(dictionary);
                 showSavedView();
         });
-        
+
         /**
          * The places in the grid where objects will appear
          */
@@ -247,7 +247,7 @@ public class ChangeDictionaryScene extends MyBorderPane {
         GridPane.setConstraints(definitionLabel, 1, 5);
         GridPane.setConstraints(exampleTextArea, 0, 6);
         GridPane.setConstraints(definitionTextArea, 1, 6);
-        
+
         /**
          * The GridPane for all the fields (textareas, labels and
          * textfields)
@@ -260,7 +260,7 @@ public class ChangeDictionaryScene extends MyBorderPane {
                 lithuanianTextArea, exampleLabel, exampleTextArea,
                 definitionLabel, definitionTextArea);
         fields.setAlignment(Pos.TOP_LEFT);
-        
+
         /**
          * HBox for buttons
          */
@@ -272,47 +272,11 @@ public class ChangeDictionaryScene extends MyBorderPane {
         getStyleClass().add("addNewWordsScene");
         setCenter(fields);
         setBottom(actionButtons);
-        
-        loadDictionary(dictionary);
-    }
-    
-    /**
-     * Loads dictionary from the file and saves words into wordList
-     * @param dictionary 
-     */
-    public final void loadDictionary(File dictionary) {
-        wordList = new ArrayList<Word>();
-        
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(dictDir + dictionary), "UTF-8"));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                makeWord(line);
-            }
-        }
-        catch (UnsupportedEncodingException e) {
-            System.err.println(e.getMessage());
-	}
-        catch(Exception ex) {
-            System.err.print("Couldn't read words from the dictionary!" + ex.getMessage());
-        }
-        
-        
+
+        wordList = loadDictionary(dictionary);
         showWord(1);
     }
-    
-    /**
-     * Makes a Word from a String
-     * @param lineToParse 
-     */
-    private void makeWord(String lineToParse) {
-        StringTokenizer parser = new StringTokenizer(lineToParse, ".");
-        if (parser.hasMoreTokens()) {
-           Word nWord = new Word(parser.nextToken(), parser.nextToken(), parser.nextToken(), parser.nextToken(), parser.nextToken());
-           wordList.add(nWord);
-        }
-    }
-    
+   
     private void deleteWord() {
         wordList.remove(wordIndex);
         if (wordIndex < wordList.size())
@@ -321,7 +285,7 @@ public class ChangeDictionaryScene extends MyBorderPane {
             showWord(-1);
         }
     }
-    
+
     /**
      * Makes the ammendments to the current Word
      */
@@ -330,7 +294,7 @@ public class ChangeDictionaryScene extends MyBorderPane {
         currentWord.setLithuanian(lithuanianTextArea.getText());
         if (exampleTextArea.getText().isEmpty())
            currentWord.setExampleSentence(" ");
-        else 
+        else
             currentWord.setExampleSentence(exampleTextArea.getText());
         currentWord.setPartOfSpeech(posList[posID]);
         if (definitionTextArea.getText().isEmpty())
@@ -341,10 +305,10 @@ public class ChangeDictionaryScene extends MyBorderPane {
         if (wordIndex > 0)
             previousWordButton.setDisable(false);
     }
-    
+
     /**
      * Saves the changed words in the file of the dictionary
-     * @param dictionary 
+     * @param dictionary
      */
     private void saveWords(File dictionary) {
         try {
@@ -363,7 +327,7 @@ public class ChangeDictionaryScene extends MyBorderPane {
         }
         wordList.clear();
     }
-    
+
     private void showWord(int direction) {
       if ((direction < 0) && (wordIndex > 0)) {                        // show previous word
         currentWord = wordList.get(--wordIndex);
@@ -375,7 +339,7 @@ public class ChangeDictionaryScene extends MyBorderPane {
         if (wordIndex == wordList.size()-1)
             nextWordButton.setDisable(true);
       }
-        if (1 == wordList.size()) 
+        if (1 == wordList.size())
             deleteWordButton.setDisable(true);
         englishTextField.setText(currentWord.getEnglish());
         lithuanianTextArea.setText(currentWord.getLithuanian());
@@ -383,20 +347,4 @@ public class ChangeDictionaryScene extends MyBorderPane {
         definitionTextArea.setText(currentWord.getDefinition());
         partOfSpeech.getSelectionModel().select(currentWord.getPartOfSpeech());
     }
-    
-    /**
-     * Disables all textfields and textareas after all the words
-     * in the wordList ends
-     */
-    private void finish() {
-        MyLabel finish = new MyLabel("Your changes have been saved!", "h1");
-        MyLabel goHome = new MyLabel("You can go to Home display by:\n 1) Selecting: File > Home \n 2) Using keyboard shortcut: CTRL + H", "suggestion");
-        VBox finishVBox = new VBox();
-        finishVBox.getChildren().addAll(finish, goHome);
-        finishVBox.setAlignment(Pos.CENTER);
-        finishVBox.setSpacing(20);
-        finishVBox.setPadding(new Insets(20, 0, 0, 0));
-        setCenter(finishVBox);
-        setBottom(null);
-    }   
 }

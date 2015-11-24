@@ -35,6 +35,19 @@ and open the template in the editor.
 .h2 {
     -fx-font-size: 18px;
 }
+.h3 {
+    -fx-font-size: 16px;
+}
+.h4 {
+    -fx-font-size: 14px;
+}
+.bold {
+    -fx-font-weight: bold;
+}
+.quote {
+    -fx-background-color: #f5f5f5;
+    -fx-text-fill: #660000;
+}
 .suggestion {
     -fx-font-size: 16px;
     -fx-text-fill: #FFFFFF;
@@ -174,4 +187,8 @@ ChoiceBox Label  {
 .mark {
     -fx-font-size: 24px;
     -fx-font-weight: bold;
+}
+
+.wordView {
+    -fx-background-color: #FFFFFF;
 }

@@ -1,2 +1,5 @@
-testA.testB.testC.Adverb.testD.
-test.testas. .Noun. .
+cat.katė.A cat was chased by a dog..Noun.testD.
+dog.šuo. My dog's name is Dolce..Noun. .
+go forward.judėti į priekį.We have to go forward..Verb.to move in the direction one's facing.
+testas.testas. .Adjective. .
+kaka.fuuuuu. .Noun. .

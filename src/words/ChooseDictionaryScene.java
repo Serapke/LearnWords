@@ -95,6 +95,11 @@ public class ChooseDictionaryScene extends BorderPane {
                 ((VBox) scene.getRoot()).getChildren().remove(1);
                 ((VBox) scene.getRoot()).getChildren().add(changeDictionary);
             }
+            else {
+                ViewDictionaryScene viewDictionary = new ViewDictionaryScene(makeFile(dicts));
+                ((VBox) scene.getRoot()).getChildren().remove(1);
+                ((VBox) scene.getRoot()).getChildren().add(viewDictionary);
+            }
         });
         
         /**

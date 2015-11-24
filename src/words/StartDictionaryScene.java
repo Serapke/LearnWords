@@ -5,25 +5,20 @@
  */
 package words;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -39,7 +34,7 @@ import javafx.scene.text.TextBoundsType;
  *      If mode (translationMode) is True then ENG-LT
  *      If mode (translationMode) is False then LT-ENG
  */
-public class StartDictionaryScene extends BorderPane {
+public class StartDictionaryScene extends MyBorderPane {
     private final File dictionary;
     private String dictionaryName;
     private final boolean translationMode;
@@ -48,7 +43,6 @@ public class StartDictionaryScene extends BorderPane {
     private Word currentWord;
     private int currentWordIndex;
     
-    private int wordsCount;
     private int errCount;
     
     private final MyLabel wordLabel;
@@ -181,44 +175,10 @@ public class StartDictionaryScene extends BorderPane {
         
         setLeft(fields);
         setBottom(buttonArea);
-        loadDictionary(dictionary);
-    }
-    
-    /**
-     * Loads dictionary from the file and saves words into wordList
-     * @param dictionary 
-     */
-    @SuppressWarnings({"Convert2Diamond", "ConvertToTryWithResources"})
-    public final void loadDictionary(File dictionary) {
-        
-        wordList = new ArrayList<Word>();
-        wrongWordList = new ArrayList<Word>();
-        wordsCount = 0;                             // # of words in a dictionary
-        try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(dictDir+ dictionary), "UTF-8"));
-                String line;
-                while ((line = reader.readLine()) != null) {
-                        wordsCount++;
-                        makeWord(line);
-                }	
-                reader.close();
-        } catch(Exception ex) {
-            System.out.println(ex);
-        }        
+        wordList = loadDictionary(dictionary);
         showNextWord();
     }
     
-    /**
-     * Makes a Word from a String
-     * @param lineToParse 
-     */
-    private void makeWord(String lineToParse) {
-        StringTokenizer parser = new StringTokenizer(lineToParse, ".");
-        if (parser.hasMoreTokens()) {
-           Word nWord = new Word(parser.nextToken(), parser.nextToken(), parser.nextToken(), parser.nextToken(), parser.nextToken());
-           wordList.add(nWord);
-        }
-    }
     
     /**
      * Shows next Word from wordsList in textfields and textareas
@@ -395,9 +355,9 @@ public class StartDictionaryScene extends BorderPane {
         MyLabel dictionaryNameLabel = new MyLabel(dictionaryName, "h2");
         
         MyLabel wordsCountLabel = new MyLabel("Words count:", "formLabel");
-        Text wordsCountText = new Text(String.valueOf(wordsCount));
+        Text wordsCountText = new Text(String.valueOf(wordList.size()));
         MyLabel correctAnswersLabel = new MyLabel("Correct answers:", "formLabel");
-        Text correctAnswersCountText = new Text(String.valueOf(wordsCount-errCount));
+        Text correctAnswersCountText = new Text(String.valueOf(wordList.size()-errCount));
         MyLabel wrongAnswersLabel = new MyLabel("Wrong answers:", "formLabel");
         Text wrongAnswersCountText = new Text(String.valueOf(errCount));
         
@@ -408,7 +368,7 @@ public class StartDictionaryScene extends BorderPane {
         markCircle.setStrokeType(StrokeType.OUTSIDE);
         markCircle.setStroke(Color.web("#1B9A91"));
         markCircle.setStrokeWidth(4);
-        Text markText = new Text(String.valueOf((wordsCount-errCount) * 100 / wordsCount) + "%");
+        Text markText = new Text(String.valueOf((wordList.size()-errCount) * 100 / wordList.size()) + "%");
         markText.getStyleClass().add("mark");
         markText.setBoundsType(TextBoundsType.VISUAL);
         StackPane mark = new StackPane();

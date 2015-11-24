@@ -14,8 +14,10 @@
         <group>
             <file>file:/Users/Mantas/IT/Words/src/words/MainWindow.css</file>
             <file>file:/Users/Mantas/IT/Words/src/words/MyBorderPane.java</file>
+            <file>file:/Users/Mantas/IT/Words/src/words/MyLabel.java</file>
             <file>file:/Users/Mantas/IT/Words/src/words/StartDictionaryScene.java</file>
             <file>file:/Users/Mantas/IT/Words/src/words/MenuWindow.java</file>
+            <file>file:/Users/Mantas/IT/Words/src/words/ViewDictionaryScene.java</file>
             <file>file:/Users/Mantas/IT/Words/src/words/ChangeDictionaryScene.java</file>
             <file>file:/Users/Mantas/IT/Words/src/words/ChooseDictionaryScene.java</file>
             <file>file:/Users/Mantas/IT/Words/src/words/CreateDictionaryScene.java</file>
