@@ -7,14 +7,22 @@ package words;
 
 import com.sun.javafx.scene.control.behavior.TextAreaBehavior;
 import com.sun.javafx.scene.control.skin.TextAreaSkin;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -30,7 +38,9 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-
+import javafx.scene.text.Font;
+import org.json.JSONObject;
+import org.json.JSONException;
 /**
  * A class for adding new words to an existing dictionary
  * @author Mantas
@@ -54,7 +64,8 @@ public class AddNewWordsScene extends MyBorderPane {
     private File dict;
     private int wordIndex;
 
-    private final Tooltip useCommasTip = new Tooltip("Use commas to separate translations");
+    private Tooltip lithuanianTip;
+    private final String useCommasTip = "Use commas to separate translations!";
 
     @SuppressWarnings({"Convert2Lambda", "Convert2Diamond"})
     public AddNewWordsScene(File dictionary) {
@@ -67,10 +78,23 @@ public class AddNewWordsScene extends MyBorderPane {
         MyLabel englishLabel = new MyLabel("English", "formLabel");
         englishTextField = new TextField("");
         englishTextField.setPrefColumnCount(10);
+        englishTextField.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if (!newValue && (englishTextField.getText().length() > 2)) {
+                    String suggestion = translateWord();
+                    if (!suggestion.isEmpty()) {
+                        lithuanianTip.setText(useCommasTip + "\n\nSuggested translation by MyMemory: " + suggestion);
+                    };
+                }
+            }
+        });
 
         MyLabel lithuanianLabel = new MyLabel("Lithuanian", "formLabel");
         lithuanianTextArea = new TextArea();
-        lithuanianTextArea.setTooltip(useCommasTip);
+        lithuanianTip = new Tooltip(useCommasTip);
+        lithuanianTip.setFont(Font.font ("Verdana", 16));
+        lithuanianTextArea.setTooltip(lithuanianTip);
         lithuanianTextArea.addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent e) -> {
             if (e.getCode() == KeyCode.TAB) {
                 TextAreaSkin skin = (TextAreaSkin) lithuanianTextArea.getSkin();
@@ -121,6 +145,7 @@ public class AddNewWordsScene extends MyBorderPane {
         partOfSpeech = new ChoiceBox();
         partOfSpeech.getItems().addAll((Object[]) posList);
         partOfSpeech.getSelectionModel().selectFirst();
+        
         partOfSpeech.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
             @SuppressWarnings("override")
             public void changed(ObservableValue ov, Number value, Number new_value)  {
@@ -311,5 +336,37 @@ public class AddNewWordsScene extends MyBorderPane {
         exampleTextArea.setText(currentWord.getExampleSentence());
         definitionTextArea.setText(currentWord.getDefinition());
         partOfSpeech.getSelectionModel().select(currentWord.getPartOfSpeech());
+    }
+    
+    private static String readUrl(String urlString) throws Exception {
+        BufferedReader reader = null;
+        try {
+            URL url = new URL(urlString);
+            reader = new BufferedReader(new InputStreamReader(url.openStream()));
+            StringBuffer buffer = new StringBuffer();
+            int read;
+            char[] chars = new char[1024];
+            while ((read = reader.read(chars)) != -1)
+                buffer.append(chars, 0, read); 
+            return buffer.toString();
+        } finally {
+            if (reader != null)
+                reader.close();
+        }
+    }
+    
+    private String translateWord() {
+        String lithuanianSuggestion = "";
+        try {
+            JSONObject translationJSON = new JSONObject(readUrl("http://api.mymemory.translated.net/get?q=" + englishTextField.getText() + "!&langpair=en|lt&of=json"));
+            JSONObject responseData = translationJSON.getJSONObject("responseData");
+            lithuanianSuggestion = (String) responseData.get("translatedText"); 
+            return lithuanianSuggestion;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (Exception ex) {
+            Logger.getLogger(AddNewWordsScene.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return lithuanianSuggestion;
     }
 }
